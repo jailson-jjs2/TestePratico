@@ -1,0 +1,169 @@
+package iniflex;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+public class FuncionarioManager {
+	
+	private static final BigDecimal SALARIO_MINIMO = new BigDecimal("1212.00");
+
+    private List<Funcionario> listaFuncionarios;
+
+    public FuncionarioManager() {
+        this.listaFuncionarios = new ArrayList<>();
+    }
+
+    public void adicionarFuncionario(String nome, LocalDate dataNasc, BigDecimal salario, String funcao) {
+        Funcionario funcionario = new Funcionario();
+        funcionario.setNome(nome);
+        funcionario.setDataNasc(dataNasc);
+        funcionario.setSalario(salario);
+        funcionario.setFuncao(funcao);
+        listaFuncionarios.add(funcionario);
+    }
+
+    public void removerFuncionario(String nome) {
+        listaFuncionarios.removeIf(funcionario -> funcionario.getNome().equals(nome));
+    }
+
+    public void mostrarFuncionarios() {
+        System.out.println("Nome          Data de Nascimento   Salário         Função");
+        System.out.println("---------------------------------------------------------");
+        for (Funcionario funcionario : listaFuncionarios) {
+            System.out.printf("%-14s %-20s %-15s %-15s%n",
+                    funcionario.getNome(),
+                    funcionario.getDataNasc().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    formatarSalario(funcionario.getSalario()),
+                    funcionario.getFuncao());
+        }
+        System.out.println();
+    }
+
+    private String formatarSalario(BigDecimal salario) {
+        NumberFormat formatoMoeda = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return formatoMoeda.format(salario);
+    }
+
+
+    public void aumentarSalarioTodos() {
+        for (Funcionario funcionario : listaFuncionarios) {
+            BigDecimal salarioAtual = funcionario.getSalario();
+            BigDecimal aumento = salarioAtual.multiply(new BigDecimal("0.10"));
+            BigDecimal novoSalario = salarioAtual.add(aumento);
+            funcionario.setSalario(novoSalario);
+        }
+    }
+    
+    public Map<String, List<Funcionario>> agruparPorFuncao() {
+        Map<String, List<Funcionario>> funcionariosPorFuncao = new HashMap<>();
+
+        for (Funcionario funcionario : listaFuncionarios) {
+            String funcao = funcionario.getFuncao();
+
+            if (!funcionariosPorFuncao.containsKey(funcao)) {
+                funcionariosPorFuncao.put(funcao, new ArrayList<>());
+            }
+
+            funcionariosPorFuncao.get(funcao).add(funcionario);
+        }
+
+        return funcionariosPorFuncao;
+    }
+    
+    
+    public void mostrarFuncionariosAgrupadosPorFuncao() {
+        Map<String, List<Funcionario>> funcionariosPorFuncao = agruparPorFuncao();
+
+        for (Map.Entry<String, List<Funcionario>> entry : funcionariosPorFuncao.entrySet()) {
+            String funcao = entry.getKey();
+            List<Funcionario> funcionarios = entry.getValue();
+
+            System.out.println("Funcionários da função: " + funcao);
+            for (Funcionario funcionario : funcionarios) {
+                System.out.println(" - " + funcionario.getNome());
+            }
+        }
+        System.out.println();
+    }
+
+    
+    public void mostrarAniversariantesMeses1012() {
+        List<Funcionario> aniversariantes1012 = listaFuncionarios.stream()
+            .filter(funcionario -> {
+                int mesAniversario = funcionario.getDataNasc().getMonthValue();
+                return mesAniversario == Month.OCTOBER.getValue() || mesAniversario == Month.DECEMBER.getValue();
+            })
+            .collect(Collectors.toList());
+        
+        System.out.println("Funcionários que fazem aniversário nos meses 10 e 12:");
+        for (Funcionario funcionario : aniversariantes1012) {
+            System.out.println(" - " + funcionario.getNome());
+        }
+    }
+    
+    
+    
+    public void mostrarFuncionarioMaiorIdade() {
+        Optional<Funcionario> funcionarioMaisVelho = listaFuncionarios.stream()
+            .max(Comparator.comparingInt(f -> calcularIdade(f.getDataNasc())));
+
+        funcionarioMaisVelho.ifPresent(funcionario -> {
+            int idade = calcularIdade(funcionario.getDataNasc());
+            System.out.println("Funcionário mais velho:");
+            System.out.println("Nome: " + funcionario.getNome() + ", Idade: " + idade);
+        });
+    }
+
+    private int calcularIdade(LocalDate dataNascimento) {
+        LocalDate dataAtual = LocalDate.now();
+        return Period.between(dataNascimento, dataAtual).getYears();
+    }
+    
+    
+    
+    
+    public void mostrarFuncionariosOrdemAlfabetica() {
+        listaFuncionarios.stream()
+            .sorted(Comparator.comparing(Funcionario::getNome))
+            .forEach(funcionario -> System.out.println("Nome: " + funcionario.getNome()));
+    }
+    
+    
+    public void mostrarTotalSalarios() {
+        double totalSalarios = listaFuncionarios.stream()
+            .mapToDouble(funcionario -> funcionario.getSalario().doubleValue())
+            .sum();
+
+        NumberFormat formatoMoeda = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        String totalFormatado = formatoMoeda.format(totalSalarios);
+
+        System.out.println("Total dos salários dos funcionários: " + totalFormatado);
+    }
+    
+    
+    public void mostrarSalariosMinimos() {
+        System.out.println("Salários em salários mínimos:");
+        listaFuncionarios.forEach(funcionario -> {
+            BigDecimal salariosMinimos = funcionario.getSalario().divide(SALARIO_MINIMO, 2, RoundingMode.HALF_UP);
+            System.out.println(funcionario.getNome() + ": " + salariosMinimos + " salários mínimos");
+        });
+    }
+    
+    
+    
+    
+
+}

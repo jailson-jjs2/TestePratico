@@ -1,0 +1,38 @@
+package iniflex;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+
+	public static void main(String[] args) {
+
+		List<Funcionario> listaFuncionarios = new ArrayList<>();
+		
+		Funcionario funcionario1 = new Funcionario();
+		funcionario1.setNome("Maria");
+		funcionario1.setDataNasc(LocalDate.of(2000, 10, 18));
+		funcionario1.setSalario(new BigDecimal("2009.44"));
+		funcionario1.setFuncao("Operador");
+		
+		Funcionario funcionario2 = new Funcionario();
+		funcionario1.setNome("João");
+		funcionario1.setDataNasc(LocalDate.of(1990, 05, 12));
+		funcionario1.setSalario(new BigDecimal("2284.38"));
+		funcionario1.setFuncao("Operador");
+		
+		listaFuncionarios.add(funcionario1);
+		listaFuncionarios.add(funcionario2);
+		
+		for (Funcionario funcionario : listaFuncionarios) {
+			System.out.println("Nome: " + funcionario.getNome() 
+			+ " Data de Nascimento: " + funcionario.getDataNasc() 
+			+ " Salário: " + funcionario.getSalario() 
+			+ " Função: " + funcionario.getFuncao());
+		}
+
+	}
+
+}

@@ -1,0 +1,59 @@
+package iniflex;
+
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class FuncionarioManager {
+
+    private List<Funcionario> listaFuncionarios;
+
+    public FuncionarioManager() {
+        this.listaFuncionarios = new ArrayList<>();
+    }
+
+    public void adicionarFuncionario(String nome, LocalDate dataNasc, BigDecimal salario, String funcao) {
+        Funcionario funcionario = new Funcionario();
+        funcionario.setNome(nome);
+        funcionario.setDataNasc(dataNasc);
+        funcionario.setSalario(salario);
+        funcionario.setFuncao(funcao);
+        listaFuncionarios.add(funcionario);
+    }
+
+    public void removerFuncionario(String nome) {
+        listaFuncionarios.removeIf(funcionario -> funcionario.getNome().equals(nome));
+    }
+
+    public void mostrarFuncionarios() {
+        System.out.println("Nome          Data de Nascimento   Salário         Função");
+        System.out.println("---------------------------------------------------------");
+        for (Funcionario funcionario : listaFuncionarios) {
+            System.out.printf("%-14s %-20s %-15s %-15s%n",
+                    funcionario.getNome(),
+                    funcionario.getDataNasc().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    formatarSalario(funcionario.getSalario()),
+                    funcionario.getFuncao());
+        }
+    }
+
+    private String formatarSalario(BigDecimal salario) {
+        NumberFormat formatoMoeda = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return formatoMoeda.format(salario);
+    }
+
+
+    public void aumentarSalarioTodos() {
+        for (Funcionario funcionario : listaFuncionarios) {
+            BigDecimal salarioAtual = funcionario.getSalario();
+            BigDecimal aumento = salarioAtual.multiply(new BigDecimal("0.10"));
+            BigDecimal novoSalario = salarioAtual.add(aumento);
+            funcionario.setSalario(novoSalario);
+        }
+    }
+
+}

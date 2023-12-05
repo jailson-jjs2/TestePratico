@@ -1,0 +1,41 @@
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+
+    public static void main(String[] args) {
+        List<Funcionario> listaFuncionarios = new ArrayList<>();
+
+        adicionarFuncionario(listaFuncionarios, "Maria", LocalDate.of(2000, 10, 18), new BigDecimal("2009.44"), "Operador");
+        adicionarFuncionario(listaFuncionarios, "João", LocalDate.of(1990, 5, 12), new BigDecimal("2284.38"), "Operador");
+
+        mostrarFuncionarios(listaFuncionarios);
+    }
+
+    private static void adicionarFuncionario(List<Funcionario> lista, String nome, LocalDate dataNasc, BigDecimal salario, String funcao) {
+        Funcionario funcionario = new Funcionario();
+        funcionario.setNome(nome);
+        funcionario.setDataNasc(dataNasc);
+        funcionario.setSalario(salario);
+        funcionario.setFuncao(funcao);
+        lista.add(funcionario);
+    }
+
+    private static void mostrarFuncionarios(List<Funcionario> lista) {
+        for (Funcionario funcionario : lista) {
+            System.out.println(formatarFuncionario(funcionario));
+        }
+    }
+
+    private static String formatarFuncionario(Funcionario funcionario) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dataFormatada = funcionario.getDataNasc().format(formatter);
+        return "Nome: " + funcionario.getNome()
+                + " Data de Nascimento: " + dataFormatada
+                + " Salário: " + funcionario.getSalario()
+                + " Função: " + funcionario.getFuncao();
+    }
+}
